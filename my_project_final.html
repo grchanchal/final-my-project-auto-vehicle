@@ -1,0 +1,734 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>স্মার্ট পৌরসভা যান ডাটাবেস কন্ট্রোল (Admin Login ও Edit সহ)</title>
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;600;700&family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+
+    <style>
+        body { font-family: 'Hind Siliguri', 'Poppins', sans-serif; }
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: #eef5fd; }
+        ::-webkit-scrollbar-thumb { background: linear-gradient(to bottom, #06b6d4, #ec4899); border-radius: 10px; }
+    </style>
+</head>
+<body class="bg-gradient-to-tr from-[#f4f7fe] via-[#eef2ff] to-[#fdf2f8] min-h-screen text-slate-800 antialiased overflow-x-hidden">
+
+    <div class="flex h-screen overflow-hidden">
+        
+        <div class="w-76 bg-white/90 backdrop-blur-2xl border-r border-slate-200 flex flex-col justify-between hidden xl:flex shadow-xl relative z-50">
+            <div class="p-6">
+                <div class="flex items-center gap-3 px-3 py-3.5 bg-gradient-to-r from-cyan-500/5 via-fuchsia-500/5 to-pink-500/5 border border-slate-200/80 rounded-2xl">
+                    <div class="bg-gradient-to-tr from-cyan-500 via-fuchsia-500 to-pink-500 p-2.5 rounded-xl text-white shadow-md shadow-fuchsia-500/20">
+                        <i class="fa-solid fa-bus text-xl flex"></i>
+                    </div>
+                    <div>
+                        <h1 class="text-md font-bold bg-gradient-to-r from-cyan-600 via-fuchsia-600 to-pink-600 bg-clip-text text-transparent tracking-wide">Laaiba IT Centre</h1>
+                        <span class="text-[11px] text-slate-500 font-semibold tracking-wider uppercase">পৌরসভা অটোমেশন হাব</span>
+                    </div>
+                </div>
+                
+                <nav class="mt-8 space-y-2">
+                    <a href="#" class="flex items-center gap-3.5 px-4 py-3 bg-gradient-to-r from-cyan-500 to-fuchsia-500 text-white rounded-xl font-semibold shadow-md shadow-cyan-500/20 transition-all">
+                        <i class="fa-solid fa-table-columns text-sm"></i> মূল ড্যাশবোর্ড
+                    </a>
+                    <a href="#" class="flex items-center gap-3.5 px-4 py-3 text-slate-600 hover:bg-slate-100 hover:text-slate-900 rounded-xl font-medium transition-all border border-transparent hover:border-slate-200">
+                        <i class="fa-solid fa-server text-cyan-500 text-sm"></i> ২০,০০০ ডাটা লাইভ ক্লাউড
+                    </a>
+                </nav>
+            </div>
+            <div class="p-4 border-t border-slate-200 text-[11px] text-slate-400 flex justify-between items-center bg-slate-50">
+                <span>ডাটাবেস: সিঙ্কড</span>
+                <span class="bg-emerald-100 text-emerald-700 px-2.5 py-0.5 rounded-full font-mono text-[10px] font-bold">Secure v7.0</span>
+            </div>
+        </div>
+
+        <div class="flex-1 flex flex-col overflow-y-auto">
+            
+            <header class="bg-white/60 backdrop-blur-md border-b border-slate-200 px-8 py-4.5 flex items-center justify-between sticky top-0 z-40">
+                <div class="flex items-center gap-3">
+                    <div class="h-2.5 w-2.5 rounded-full bg-emerald-500 animate-pulse"></div>
+                    <h2 class="text-xs font-bold text-slate-500 uppercase tracking-widest">Municipal Data Terminal</h2>
+                </div>
+                <div class="flex items-center gap-4">
+                    <div id="adminProfileArea" class="hidden flex items-center gap-3 bg-slate-100/80 px-3 py-1.5 rounded-xl border border-slate-200">
+                        <div class="text-right">
+                            <p class="text-xs font-bold text-slate-800">Mr. Giasuddin (Chanchal)</p>
+                            <p class="text-[9px] text-emerald-600 font-bold uppercase tracking-wider">Root Admin</p>
+                        </div>
+                        <button onclick="handleAdminLogout()" class="bg-rose-500 hover:bg-rose-600 text-white text-[11px] font-bold px-2.5 py-1 rounded-lg cursor-pointer transition-all">
+                            <i class="fa-solid fa-power-off"></i> Logout
+                        </button>
+                    </div>
+                    
+                    <button id="loginTriggerBtn" onclick="openLoginModal()" class="bg-gradient-to-r from-cyan-500 to-fuchsia-500 text-white font-bold text-xs px-4 py-2 rounded-xl shadow-md hover:opacity-95 transition-all cursor-pointer flex items-center gap-1.5">
+                        <i class="fa-solid fa-lock"></i> System Admin Login
+                    </button>
+                    
+                    <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-cyan-500 via-fuchsia-500 to-pink-500 text-white font-bold flex items-center justify-center shadow-md text-xs">GC</div>
+                </div>
+            </header>
+
+            <main class="p-6 md:p-8 space-y-8 max-w-7xl w-full mx-auto">
+
+                <div class="grid grid-cols-1 sm:grid-cols-4 gap-5">
+                    <div class="bg-white border border-slate-200 p-5 rounded-3xl relative overflow-hidden shadow-sm">
+                        <span class="text-cyan-500 text-lg absolute top-4 right-5"><i class="fa-solid fa-database"></i></span>
+                        <p class="text-xs font-semibold text-slate-400">সর্বোচ্চ ধারণক্ষমতা</p>
+                        <h4 class="text-2xl font-black mt-1 font-mono text-slate-800 tracking-wide">২০,০০০ ডাটা</h4>
+                    </div>
+                    <div class="bg-white border border-slate-200 p-5 rounded-3xl relative overflow-hidden shadow-sm">
+                        <span class="text-fuchsia-500 text-lg absolute top-4 right-5"><i class="fa-solid fa-users"></i></span>
+                        <p class="text-xs font-semibold text-slate-400">মোট লাইভ এন্ট্রি</p>
+                        <h4 class="text-2xl font-black mt-1 font-mono text-fuchsia-600" id="liveCounter">১ জন</h4>
+                    </div>
+                    <div class="bg-white border border-slate-200 p-5 rounded-3xl relative overflow-hidden shadow-sm">
+                        <span class="text-emerald-500 text-lg absolute top-4 right-5"><i class="fa-brands fa-whatsapp"></i></span>
+                        <p class="text-xs font-semibold text-slate-400">মেসেজার ইঞ্জিন</p>
+                        <h4 class="text-xs font-bold mt-2 text-emerald-600 bg-emerald-50 border border-emerald-200 rounded-xl px-3 py-1 inline-block">অটোমেটিক ইনস্ট্যান্ট</h4>
+                    </div>
+                    <div class="bg-white border border-slate-200 p-5 rounded-3xl relative overflow-hidden shadow-sm">
+                        <span class="text-amber-500 text-lg absolute top-4 right-5"><i class="fa-solid fa-shield-halved"></i></span>
+                        <p class="text-xs font-semibold text-slate-400">নিরাপত্তা স্ট্যাটাস</p>
+                        <h4 id="securityStatusText" class="text-xs font-bold mt-2 text-amber-600 bg-amber-50 border border-amber-200 rounded-xl px-3 py-1 inline-block">লকড (ভিউ মোড)</h4>
+                    </div>
+                </div>
+
+                <section class="bg-white p-6 rounded-3xl border border-slate-200 shadow-md relative overflow-hidden">
+                    <div id="formLockOverlay" class="absolute inset-0 bg-white/70 backdrop-blur-xs z-30 flex flex-col items-center justify-center gap-2">
+                        <div class="w-12 h-12 bg-amber-100 text-amber-600 border border-amber-200 rounded-full flex items-center justify-center text-lg shadow-sm animate-bounce">
+                            <i class="fa-solid fa-lock"></i>
+                        </div>
+                        <p class="text-xs font-bold text-slate-700">ডাটা এন্ট্রি বা এডিট করতে প্রথমে উপরে "System Admin Login" করুন</p>
+                    </div>
+
+                    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center border-b border-slate-100 pb-4 mb-6 gap-4">
+                        <div>
+                            <h3 class="text-md font-bold text-slate-800 flex items-center gap-2">
+                                <i class="fa-solid fa-pen-to-square text-cyan-500"></i> পৌরসভা ডিজিটাল স্মার্ট ইনপুট ফর্ম 
+                                <span id="formModeBadge" class="hidden text-[10px] bg-amber-500 text-white px-2 py-0.5 rounded-md uppercase font-mono">এডিট মোড সক্রিয়</span>
+                            </h3>
+                            <p class="text-xs text-slate-500 mt-0.5">সবগুলো ফিল্ড সঠিকভাবে টাইপ করুন</p>
+                        </div>
+                        
+                        <div class="flex bg-slate-100 p-1 rounded-xl border border-slate-200 shadow-inner">
+                            <button type="button" id="tabBtn1" onclick="toggleFormTab('ownerSection', ['driverSection', 'nomineeSection'], this)" class="px-3.5 py-2 text-xs font-bold rounded-lg bg-gradient-to-r from-cyan-500 to-fuchsia-500 text-white cursor-pointer transition-all">১. মালিক ও যান</button>
+                            <button type="button" id="tabBtn2" onclick="toggleFormTab('driverSection', ['ownerSection', 'nomineeSection'], this)" class="px-3.5 py-2 text-xs font-bold rounded-lg text-slate-500 hover:text-slate-800 cursor-pointer transition-all">২. চালকের তথ্য</button>
+                            <button type="button" id="tabBtn3" onclick="toggleFormTab('nomineeSection', ['ownerSection', 'driverSection'], this)" class="px-3.5 py-2 text-xs font-bold rounded-lg text-slate-500 hover:text-slate-800 cursor-pointer transition-all">৩. নমিনির তথ্য</button>
+                        </div>
+                    </div>
+                    
+                    <form id="masterDataForm" onsubmit="processAndSaveData(event)">
+                        <input type="hidden" id="editingRowId" value="">
+
+                        <div id="ownerSection" class="space-y-4">
+                            <h4 class="text-xs font-bold text-cyan-600 uppercase tracking-widest mb-3 border-l-2 border-cyan-500 pl-2">Vehicle & Owner Details</h4>
+                            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                                <div>
+                                    <label class="block text-xs text-slate-600 mb-1">Vehicles Owner Name *</label>
+                                    <input type="text" id="vOwnerName" required placeholder="মালিকের নাম লিখুন" class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-800 outline-none">
+                                </div>
+                                <div>
+                                    <label class="block text-xs text-slate-600 mb-1">Owner Picture (URL/Text) *</label>
+                                    <input type="text" id="vOwnerPic" placeholder="ছবির ডেমো লিংক বা ফাইল নেম" class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-800 outline-none">
+                                </div>
+                                <div>
+                                    <label class="block text-xs text-slate-600 mb-1">Owner NID *</label>
+                                    <input type="number" id="vOwnerNid" required placeholder="মালিকের এনআইডি নম্বর" class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-800 outline-none">
+                                </div>
+                                <div>
+                                    <label class="block text-xs text-slate-600 mb-1">Mobile Number *</label>
+                                    <input type="tel" id="vOwnerMobile" required placeholder="মালিকের মোবাইল" class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-800 outline-none">
+                                </div>
+                                <div>
+                                    <label class="block text-xs text-slate-600 mb-1">WhatsApp Number *</label>
+                                    <input type="tel" id="vOwnerWA" required placeholder="8801XXXXXXXXX" class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-800 outline-none">
+                                </div>
+                                <div>
+                                    <label class="block text-xs text-cyan-600 mb-1 font-semibold">Powroshova Registration no *</label>
+                                    <input type="text" id="pauroRegNo" required placeholder="পৌরসভা রেজিস্ট্রেশন নম্বর" class="w-full px-4 py-2.5 bg-slate-50 border border-cyan-300 rounded-xl text-xs text-slate-800 outline-none">
+                                </div>
+                                <div>
+                                    <label class="block text-xs text-slate-600 mb-1">Father's Name</label>
+                                    <input type="text" id="vOwnerFather" placeholder="পিতার নাম" class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-800 outline-none">
+                                </div>
+                                <div>
+                                    <label class="block text-xs text-slate-600 mb-1">Mother's Name</label>
+                                    <input type="text" id="vOwnerMother" placeholder="মাতার নাম" class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-800 outline-none">
+                                </div>
+                                <div>
+                                    <label class="block text-xs text-slate-600 mb-1">Upazila</label>
+                                    <input type="text" id="vOwnerUpazila" placeholder="যেমন: মাগুরা সদর" class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-800 outline-none">
+                                </div>
+                                <div>
+                                    <label class="block text-xs text-slate-600 mb-1">District</label>
+                                    <input type="text" id="vOwnerDistrict" placeholder="যেমন: মাগুরা" class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-800 outline-none">
+                                </div>
+                                <div>
+                                    <label class="block text-xs text-slate-600 mb-1">Vehicles picture (URL)</label>
+                                    <input type="text" id="vPicUrl" placeholder="গাড়ির ছবির লিংক" class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-800 outline-none">
+                                </div>
+                                <div class="md:col-span-3">
+                                    <label class="block text-xs text-slate-600 mb-1">Full Address *</label>
+                                    <input type="text" id="vOwnerAddress" required placeholder="মালিকের সম্পূর্ণ ঠিকানা বিবরণ" class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-800 outline-none">
+                                </div>
+                                <div class="md:col-span-3">
+                                    <label class="block text-xs text-slate-600 mb-1">Vehicles Legal papers *</label>
+                                    <textarea id="vLegalPapers" required rows="2" placeholder="ট্যাক্স টোকেন, ফিটনেস সার্টিফিকেট ও রেজিস্ট্রেশন পেপার্স" class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-800 outline-none resize-none"></textarea>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div id="driverSection" class="space-y-4 hidden">
+                            <h4 class="text-xs font-bold text-fuchsia-600 uppercase tracking-widest mb-3 border-l-2 border-fuchsia-500 pl-2">Driver Details</h4>
+                            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                                <div>
+                                    <label class="block text-xs text-slate-800 mb-1">Driver Name *</label>
+                                    <input type="text" id="dName" placeholder="চালকের পূর্ণ নাম" class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-800 outline-none">
+                                </div>
+                                <div>
+                                    <label class="block text-xs text-slate-600 mb-1">Driver Picture (URL)</label>
+                                    <input type="text" id="dPicUrl" placeholder="চালকের প্রোফাইল পিকচার লিংক" class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-800 outline-none">
+                                </div>
+                                <div>
+                                    <label class="block text-xs text-slate-800 mb-1">Father's Name</label>
+                                    <input type="text" id="dFather" placeholder="চালকের পিতার নাম" class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-800 outline-none">
+                                </div>
+                                <div>
+                                    <label class="block text-xs text-slate-600 mb-1">Mother Name</label>
+                                    <input type="text" id="dMother" placeholder="চালকের মাতার নাম" class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-800 outline-none">
+                                </div>
+                                <div>
+                                    <label class="block text-xs text-slate-600 mb-1">NID No *</label>
+                                    <input type="number" id="dNidNo" placeholder="চালকের এনআইডি নম্বর" class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-800 outline-none">
+                                </div>
+                                <div>
+                                    <label class="block text-xs text-slate-600 mb-1">NID Picture (URL)</label>
+                                    <input type="text" id="dNidPicUrl" placeholder="চালকের এনআইডি ডকুমেন্ট লিংক" class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-800 outline-none">
+                                </div>
+                                <div>
+                                    <label class="block text-xs text-slate-600 mb-1">Upazila</label>
+                                    <input type="text" id="dUpazila" placeholder="চালকের উপজেলা" class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-800 outline-none">
+                                </div>
+                                <div>
+                                    <label class="block text-xs text-slate-600 mb-1">District</label>
+                                    <input type="text" id="dDistrict" placeholder="চালকের জেলা" class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-800 outline-none">
+                                </div>
+                                <div>
+                                    <label class="block text-xs text-slate-600 mb-1">Mobile Number *</label>
+                                    <input type="tel" id="dMobile" placeholder="চালকের মোবাইল" class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-800 outline-none">
+                                </div>
+                                <div>
+                                    <label class="block text-xs text-slate-600 mb-1">WhatsApp Number *</label>
+                                    <input type="tel" id="dWhatsApp" placeholder="8801XXXXXXXXX" class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-800 outline-none">
+                                </div>
+                                
+                                <div>
+                                    <label class="block text-[15px] font-bold text-slate-700 mb-1">Payment System *</label>
+                                    <select id="paymentMethod" class="w-full px-3 py-2 bg-[#f8fafc] border border-slate-300 rounded-xl text-[15px] font-bold text-[#1e293b] focus:border-cyan-500 outline-none shadow-inner">
+                                        <option value="bKash Merchant">bKash Live (বিকার্স অনলাইন এপিআই)</option>
+                                        <option value="Nagad Pay">Nagad Instant (নগদ এপিআই)</option>
+                                        <option value="Rocket Smart">Rocket Banking API</option>
+                                        <option value="Municipal Counter">পৌরসভা ক্যাশ কাউন্টার (Paid)</option>
+                                    </select>
+                                </div>
+                                <div class="md:col-span-3">
+                                    <label class="block text-xs text-slate-600 mb-1">Full Address *</label>
+                                    <input type="text" id="dAddress" placeholder="চালকের সম্পূর্ণ ঠিকানা বিবরণ" class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-800 outline-none">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div id="nomineeSection" class="space-y-4 hidden">
+                            <h4 class="text-xs font-bold text-pink-600 uppercase tracking-widest mb-3 border-l-2 border-pink-500 pl-2">Nominee Details</h4>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div>
+                                    <label class="block text-xs text-slate-600 mb-1">Nominee Name *</label>
+                                    <input type="text" id="nName" placeholder="নমিনির পূর্ণ নাম" class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-800 outline-none">
+                                </div>
+                                <div>
+                                    <label class="block text-xs text-slate-600 mb-1">Nominee Mobile *</label>
+                                    <input type="tel" id="nMobile" placeholder="নমিনির অ্যাক্টিভ মোবাইল নম্বর" class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-800 outline-none">
+                                </div>
+                                <div>
+                                    <label class="block text-xs text-slate-600 mb-1">Nominee NID</label>
+                                    <input type="number" id="nNid" placeholder="নমিনির এনআইডি নম্বর" class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-800 outline-none">
+                                </div>
+                                <div>
+                                    <label class="block text-xs text-slate-600 mb-1">Nominee Picture (URL/Text)</label>
+                                    <input type="text" id="nPic" placeholder="নমিনির ছবির ডেমো লিংক বা টেক্সট" class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-800 outline-none">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="flex justify-between items-center pt-4 border-t border-slate-100 mt-6">
+                            <button type="button" id="cancelEditBtn" onclick="resetFormToNormal()" class="hidden bg-slate-200 hover:bg-slate-300 text-slate-700 font-bold py-2.5 px-6 rounded-xl transition-all text-xs">
+                                এডিট বাতিল করুন
+                            </button>
+                            <button type="submit" id="submitFormBtn" class="ml-auto bg-gradient-to-r from-cyan-500 via-fuchsia-500 to-pink-500 hover:opacity-95 text-white font-bold py-3 px-10 rounded-2xl transition-all flex items-center gap-2 cursor-pointer text-xs uppercase tracking-wider shadow-md shadow-fuchsia-500/20">
+                                <i class="fa-solid fa-cloud-arrow-up"></i> <span id="submitBtnText">২০,০০০ ডাটাবেসে এন্ট্রি সংরক্ষণ করুন</span>
+                            </button>
+                        </div>
+                    </form>
+                </section>
+
+                <section class="bg-white rounded-3xl border border-slate-200 shadow-md overflow-hidden">
+                    
+                    <div class="p-5 border-b border-slate-200 bg-slate-50 flex flex-col sm:flex-row justify-between items-center gap-4">
+                        <div class="relative w-full sm:w-100">
+                            <span class="absolute inset-y-0 left-0 flex items-center pl-4 text-cyan-600 pointer-events-none">
+                                <i class="fa-solid fa-magnifying-glass text-xs"></i>
+                            </span>
+                            <input type="text" id="liveSearchEngine" onkeyup="instantSearch()" placeholder="পৌরসভা রেজি:, নাম, বা NID দিয়ে লাইভ সার্চ করুন..." class="w-full pl-11 pr-4 py-2.5 bg-white border border-slate-200 rounded-2xl text-xs text-slate-800 focus:outline-none focus:ring-2 focus:ring-cyan-500">
+                        </div>
+                        <div class="flex items-center gap-2 text-[10px] text-slate-400 uppercase tracking-widest font-bold">
+                            <span>সার্চ ইঞ্জিন সচল</span>
+                            <span class="w-2 h-2 rounded-full bg-emerald-500 animate-ping"></span>
+                        </div>
+                    </div>
+                    
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left border-collapse">
+                            <thead>
+                                <tr class="bg-slate-50 text-slate-500 text-xs font-bold uppercase tracking-wider border-b border-slate-200">
+                                    <th class="px-6 py-4">গাড়ী ও মালিকের বিবরণ</th>
+                                    <th class="px-6 py-4">চালকের প্রোফাইল</th>
+                                    <th class="px-6 py-4">নমিনি গ্যারান্টর</th>
+                                    <th class="px-6 py-4">পৌরসভা আইডি ও ঠিকানা</th>
+                                    <th class="px-6 py-4">পেমেন্ট গেটওয়ে</th>
+                                    <th class="px-6 py-4">অটো জেনারেটেড QR</th>
+                                    <th class="px-6 py-4 text-center">অ্যাকশন ও হোয়াটসঅ্যাপ কন্ট্রোল</th>
+                                </tr>
+                            </thead>
+                            <tbody id="masterSystemTable" class="divide-y divide-slate-100 text-xs text-slate-700">
+                                <tr id="row_pauro_122" class="hover:bg-slate-50/80 transition-all"
+                                    data-vownername="Md. Rony Mollah" data-vownerpic="" data-vownernid="5012233445" data-vownermobile="01672300602" data-vownerwa="01672300602" data-pauroregno="পৌর-রেকর্ড-১২২" data-vownerfather="পিতার নাম" data-vownermother="মাতার নাম" data-vownerupazila="মাগুরা সদর" data-vownerdistrict="মাগুরা" data-vpicurl="" data-vowneraddress="মাগুরা সদর, মাগুরা" data-vlegalpapers="ট্যাক্স টোকেন ও ফিটনেস পেপারস ওকে"
+                                    data-dname="Rasel Biswas" data-dpicurl="" data-dfather="চালক পিতা" data-dmother="চালক মাতা" data-dnidno="৪৪১২৩৪৫৬৭৮" data-dnidpicurl="" data-dupazila="মাগুরা সদর" data-ddistrict="মাগুরা" data-dmobile="01955555555" data-dwhatsapp="8801955555555" data-paymentmethod="bKash Merchant"
+                                    data-nname="Asma Begum" data-nmobile="01222222222" data-nnid="৯৯৮৮৭৭৬৬৫৫" data-npic="">
+                                    <td class="px-6 py-4">
+                                        <div class="flex items-center gap-3">
+                                            <img src="https://api.dicebear.com/7.x/initials/svg?seed=Ghiyas" class="w-10 h-10 rounded-xl object-cover ring-2 ring-cyan-500/20">
+                                            <div>
+                                                <div class="font-bold text-slate-900 text-sm">Md. Rony Mollah</div>
+                                                <div class="text-[10px] text-cyan-600 font-mono">Mobile:01672300602</div>
+                                                <div class="text-[9px] text-slate-500 mt-0.5">All Papers are Uploaded</div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td class="px-6 py-4">
+                                        <div class="flex items-center gap-3">
+                                            <img src="https://api.dicebear.com/7.x/initials/svg?seed=Driver1" class="w-10 h-10 rounded-xl object-cover ring-2 ring-fuchsia-500/20">
+                                            <div>
+                                                <div class="font-bold text-slate-800">Md. Arafat Hussain</div>
+                                                <div class="text-[10px] text-slate-500">Mobile: 01955555555</div>
+                                                <div class="text-[9px] text-fuchsia-600">Driver NID: 554455667654</div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td class="px-6 py-4">
+                                        <div class="flex items-center gap-3">
+                                            <img src="https://api.dicebear.com/7.x/initials/svg?seed=Nominee1" class="w-10 h-10 rounded-xl object-cover ring-2 ring-pink-500/20">
+                                            <div>
+                                                <div class="font-bold text-slate-800">Asma Begum</div>
+                                                <div class="text-[10px] text-slate-600">Nominee Mobile: 01842300601</div>
+                                                <div class="text-[10px] text-slate-600">Nominee NID: 9988776655</div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td class="px-6 py-4">
+                                        <div class="font-bold text-cyan-600 text-sm">Municipal-Record-122</div>
+                                        <div class="text-[10px] text-slate-700 font-semibold">Owner NID: 5046575364</div>
+                                        <div class="text-[10px] text-slate-500">Location: Magura Sadar, Magura</div>
+                                    </td>
+                                    <td class="px-6 py-4">
+                                        <span class="px-3 py-1.5 rounded-lg text-[15px] font-bold tracking-wider bg-[#f1f5f9] text-[#1e293b] border border-slate-200 shadow-sm block text-center">bKash Merchant</span>
+                                    </td>
+                                    <td class="px-6 py-2">
+                                        <div class="real-qr bg-white p-1 rounded-lg inline-block cursor-pointer border border-slate-200 transition-transform hover:scale-105" data-payload="RegNo:পৌর-রেকર્ડ-১২২|OwnerNID:5012233445|Driver:Arif"></div>
+                                    </td>
+                                    <td class="px-6 py-4 space-y-1.5">
+                                        <div class="grid grid-cols-2 gap-1">
+                                            <button onclick="editMasterRow('row_pauro_122')" class="action-edit-btn col-span-2 bg-slate-300 text-slate-600 py-1 rounded-lg text-[11px] font-bold cursor-not-allowed transition-all flex items-center justify-center gap-1 shadow-sm" disabled>
+                                                <i class="fa-solid fa-lock text-[9px]"></i> এডিট (লকড)
+                                            </button>
+                                            <button onclick="executeWhatsAppAutomation(this, 'Owner')" class="bg-emerald-600 hover:bg-emerald-500 text-white py-1 rounded-lg text-[10px] font-bold cursor-pointer flex items-center justify-center gap-0.5 shadow-sm transition-all">
+                                                <i class="fa-brands fa-whatsapp"></i> মালিক
+                                            </button>
+                                            <button onclick="executeWhatsAppAutomation(this, 'Driver')" class="bg-fuchsia-600 hover:bg-fuchsia-500 text-white py-1 rounded-lg text-[10px] font-bold cursor-pointer flex items-center justify-center gap-0.5 shadow-sm transition-all">
+                                                <i class="fa-brands fa-whatsapp"></i> চালক
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </section>
+
+            </main>
+        </div>
+    </div>
+
+    <div id="adminLoginModal" class="fixed inset-0 bg-slate-900/40 backdrop-blur-md z-50 flex items-center justify-center hidden opacity-0 transition-opacity duration-300">
+        <div class="bg-white p-7 rounded-3xl border border-slate-200 shadow-2xl max-w-sm w-full mx-4 relative">
+            <button onclick="closeLoginModal()" class="absolute top-4 right-4 text-slate-400 hover:text-slate-600 text-sm cursor-pointer">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+            
+            <div class="text-center mb-5">
+                <div class="w-12 h-12 bg-gradient-to-tr from-cyan-500 to-fuchsia-500 text-white rounded-2xl flex items-center justify-center text-lg mx-auto shadow-md shadow-fuchsia-500/20 mb-2">
+                    <i class="fa-solid fa-shield-halved"></i>
+                </div>
+                <h3 class="text-md font-bold text-slate-800">System Admin Authentication</h3>
+                <p class="text-[11px] text-slate-400 mt-0.5">সুরক্ষিত পৌরসভা ডাটাবেস প্যানেল</p>
+            </div>
+
+            <form onsubmit="executeAdminLogin(event)" class="space-y-4">
+                <div>
+                    <label class="block text-[11px] text-slate-500 mb-1">Admin Username</label>
+                    <input type="text" id="loginUser" required placeholder="admin" class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs outline-none focus:border-cyan-500">
+                </div>
+                <div>
+                    <label class="block text-[11px] text-slate-500 mb-1">Security Password</label>
+                    <input type="password" id="loginPass" required placeholder="••••••••" class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs outline-none focus:border-cyan-500">
+                </div>
+                <div id="loginErrorMsg" class="text-[11px] text-rose-500 font-bold text-center hidden">ভুল ইউজারনেম বা পাসওয়ার্ড! আবার চেষ্টা করুন।</div>
+                
+                <button type="submit" class="w-full bg-gradient-to-r from-cyan-500 via-fuchsia-500 to-pink-500 text-white font-bold text-xs py-3 rounded-xl shadow-md cursor-pointer hover:opacity-95 transition-all uppercase tracking-wider">
+                    লগইন করুন <i class="fa-solid fa-arrow-right-to-bracket ml-1"></i>
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // ডেমো লগইন ক্রেডেনশিয়ালস
+        const ADMIN_USER = "admin";
+        const ADMIN_PASS = "12345";
+        let IS_LOGGED_IN = false;
+
+        function systemBootLoader() {
+            document.querySelectorAll('.real-qr').forEach(box => {
+                if(box.innerHTML === "") {
+                    new QRCode(box, { text: box.getAttribute('data-payload'), width: 45, height: 45 });
+                }
+            });
+            refreshLiveCounter();
+            updateUIAccessControl();
+        }
+
+        // লগইন মোডাল কন্ট্রোল
+        function openLoginModal() {
+            const modal = document.getElementById('adminLoginModal');
+            modal.classList.remove('hidden');
+            setTimeout(() => { modal.classList.remove('opacity-0'); }, 10);
+        }
+
+        function closeLoginModal() {
+            const modal = document.getElementById('adminLoginModal');
+            modal.classList.add('opacity-0');
+            setTimeout(() => { modal.classList.add('hidden'); }, 300);
+            document.getElementById('loginErrorMsg').classList.add('hidden');
+        }
+
+        // অ্যাডমিন লগইন প্রসেস
+        function executeAdminLogin(event) {
+            event.preventDefault();
+            const u = document.getElementById('loginUser').value;
+            const p = document.getElementById('loginPass').value;
+
+            if (u === ADMIN_USER && p === ADMIN_PASS) {
+                IS_LOGGED_IN = true;
+                closeLoginModal();
+                updateUIAccessControl();
+                alert("সাফল্যের সাথে সিস্টেম অ্যাডমিন লগইন সম্পন্ন হয়েছে!");
+            } else {
+                document.getElementById('loginErrorMsg').classList.remove('hidden');
+            }
+        }
+
+        // অ্যাডমিন লগআউট প্রসেস
+        function handleAdminLogout() {
+            IS_LOGGED_IN = false;
+            updateUIAccessControl();
+            resetFormToNormal();
+            alert("সিস্টেম অ্যাডমিন লগআউট করা হয়েছে। ডাটাবেস এখন ভিউ মোডে রয়েছে।");
+        }
+
+        // লগইন স্ট্যাটাসের উপর ভিত্তি করে ইন্টারফেস পরিবর্তন মেকানিজম
+        function updateUIAccessControl() {
+            const overlay = document.getElementById('formLockOverlay');
+            const loginBtn = document.getElementById('loginTriggerBtn');
+            const profileArea = document.getElementById('adminProfileArea');
+            const secStatus = document.getElementById('securityStatusText');
+            const allEditBtns = document.querySelectorAll('.action-edit-btn');
+
+            if (IS_LOGGED_IN) {
+                overlay.classList.add('hidden');
+                loginBtn.classList.add('hidden');
+                profileArea.classList.remove('hidden');
+                secStatus.innerText = "অ্যাডমিন (আনলকড)";
+                secStatus.className = "text-xs font-bold mt-2 text-emerald-600 bg-emerald-50 border border-emerald-200 rounded-xl px-3 py-1 inline-block";
+                
+                allEditBtns.forEach(btn => {
+                    btn.removeAttribute('disabled');
+                    btn.className = "action-edit-btn col-span-2 bg-amber-500 hover:bg-amber-600 text-white py-1 rounded-lg text-[11px] font-bold cursor-pointer transition-all flex items-center justify-center gap-1 shadow-sm";
+                    btn.innerHTML = `<i class="fa-solid fa-user-gear"></i> তথ্য এডিট করুন`;
+                });
+            } else {
+                overlay.classList.remove('hidden');
+                loginBtn.classList.remove('hidden');
+                profileArea.classList.add('hidden');
+                secStatus.innerText = "লকড (ভিউ মোড)";
+                secStatus.className = "text-xs font-bold mt-2 text-amber-600 bg-amber-50 border border-amber-200 rounded-xl px-3 py-1 inline-block";
+                
+                allEditBtns.forEach(btn => {
+                    btn.setAttribute('disabled', 'true');
+                    btn.className = "action-edit-btn col-span-2 bg-slate-200 text-slate-400 py-1 rounded-lg text-[11px] font-bold cursor-not-allowed transition-all flex items-center justify-center gap-1 shadow-sm";
+                    btn.innerHTML = `<i class="fa-solid fa-lock text-[9px]"></i> এডিট (লকড)`;
+                });
+            }
+        }
+
+        function toggleFormTab(showId, hideIdsArray, btn) {
+            document.getElementById(showId).classList.remove('hidden');
+            hideIdsArray.forEach(id => document.getElementById(id).classList.add('hidden'));
+            const tabButtons = btn.parentNode.children;
+            for(let i=0; i<tabButtons.length; i++) {
+                tabButtons[i].className = "px-3.5 py-2 text-xs font-bold rounded-lg text-slate-500 hover:text-slate-800 cursor-pointer transition-all";
+            }
+            btn.className = "px-3.5 py-2 text-xs font-bold rounded-lg bg-gradient-to-r from-cyan-500 to-fuchsia-500 text-white cursor-pointer transition-all";
+        }
+
+        // এডিট রো কন্ট্রোল
+        function editMasterRow(rowId) {
+            if(!IS_LOGGED_IN) return;
+            const row = document.getElementById(rowId);
+            if(!row) return;
+
+            document.getElementById('editingRowId').value = rowId;
+            document.getElementById('formModeBadge').classList.remove('hidden');
+            document.getElementById('submitBtnText').innerText = "ডাটাবেস তথ্য আপডেট (Update) করুন";
+            document.getElementById('cancelEditBtn').classList.remove('hidden');
+
+            // ফর্ম ইনপুট অটো-ফিল মেকানিজম
+            document.getElementById('vOwnerName').value = row.dataset.vownername || '';
+            document.getElementById('vOwnerPic').value = row.dataset.vownerpic || '';
+            document.getElementById('vOwnerNid').value = row.dataset.vownernid || '';
+            document.getElementById('vOwnerMobile').value = row.dataset.vownermobile || '';
+            document.getElementById('vOwnerWA').value = row.dataset.vownerwa || '';
+            document.getElementById('pauroRegNo').value = row.dataset.pauroregno || '';
+            document.getElementById('vOwnerFather').value = row.dataset.vownerfather || '';
+            document.getElementById('vOwnerMother').value = row.dataset.vownermother || '';
+            document.getElementById('vOwnerUpazila').value = row.dataset.vownerupazila || '';
+            document.getElementById('vOwnerDistrict').value = row.dataset.vownerdistrict || '';
+            document.getElementById('vPicUrl').value = row.dataset.vpicurl || '';
+            document.getElementById('vOwnerAddress').value = row.dataset.vowneraddress || '';
+            document.getElementById('vLegalPapers').value = row.dataset.vlegalpapers || '';
+
+            document.getElementById('dName').value = row.dataset.dname || '';
+            document.getElementById('dPicUrl').value = row.dataset.dpicurl || '';
+            document.getElementById('dFather').value = row.dataset.dfather || '';
+            document.getElementById('dMother').value = row.dataset.dmother || '';
+            document.getElementById('dNidNo').value = row.dataset.dnidno || '';
+            document.getElementById('dNidPicUrl').value = row.dataset.dnidpicurl || '';
+            document.getElementById('dUpazila').value = row.dataset.dupazila || '';
+            document.getElementById('dDistrict').value = row.dataset.ddistrict || '';
+            document.getElementById('dMobile').value = row.dataset.dmobile || '';
+            document.getElementById('dWhatsApp').value = row.dataset.dwhatsapp || '';
+            document.getElementById('paymentMethod').value = row.dataset.paymentmethod || 'bKash Merchant';
+
+            document.getElementById('nName').value = row.dataset.nname || '';
+            document.getElementById('nMobile').value = row.dataset.nmobile || '';
+            document.getElementById('nNid').value = row.dataset.nnid || '';
+            document.getElementById('nPic').value = row.dataset.npic || '';
+
+            document.getElementById('tabBtn1').click();
+            document.getElementById('masterDataForm').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        function resetFormToNormal() {
+            document.getElementById('masterDataForm').reset();
+            document.getElementById('editingRowId').value = "";
+            document.getElementById('formModeBadge').classList.add('hidden');
+            document.getElementById('submitBtnText').innerText = "২০,০০০ ডাটাবেসে এন্ট্রি সংরক্ষণ করুন";
+            document.getElementById('cancelEditBtn').classList.add('hidden');
+            document.getElementById('tabBtn1').click();
+        }
+
+        // ডাটা প্রসেসিং, সেভ এবং আপডেট
+        function processAndSaveData(event) {
+            event.preventDefault();
+            if(!IS_LOGGED_IN) return;
+
+            const dataset = {
+                vownername: document.getElementById('vOwnerName').value,
+                vownerpic: document.getElementById('vOwnerPic').value,
+                vownernid: document.getElementById('vOwnerNid').value,
+                vownermobile: document.getElementById('vOwnerMobile').value,
+                vownerwa: document.getElementById('vOwnerWA').value,
+                pauroregno: document.getElementById('pauroRegNo').value,
+                vownerfather: document.getElementById('vOwnerFather').value,
+                vownermother: document.getElementById('vOwnerMother').value,
+                vownerupazila: document.getElementById('vOwnerUpazila').value || "মাগুরা সদর",
+                vownerdistrict: document.getElementById('vOwnerDistrict').value || "মাগুরা",
+                vpicurl: document.getElementById('vPicUrl').value,
+                vowneraddress: document.getElementById('vOwnerAddress').value,
+                vlegalpapers: document.getElementById('vLegalPapers').value,
+                dname: document.getElementById('dName').value || "মালিক নিজে",
+                dpicurl: document.getElementById('dPicUrl').value,
+                dfather: document.getElementById('dFather').value,
+                dmother: document.getElementById('dMother').value,
+                dnidno: document.getElementById('dNidNo').value || "N/A",
+                dnidpicurl: document.getElementById('dNidPicUrl').value,
+                dupazila: document.getElementById('dUpazila').value,
+                ddistrict: document.getElementById('dDistrict').value,
+                dmobile: document.getElementById('dMobile').value,
+                dwhatsapp: document.getElementById('dWhatsApp').value,
+                paymentmethod: document.getElementById('paymentMethod').value,
+                nname: document.getElementById('nName').value || "N/A",
+                nmobile: document.getElementById('nMobile').value || "N/A",
+                nnid: document.getElementById('nNid').value || "N/A",
+                npic: document.getElementById('nPic').value
+            };
+
+            const qrTextPayload = `PauroReg:${dataset.pauroregno}|OwnerNID:${dataset.vownernid}|OwnerName:${dataset.vownername}`;
+            const editingRowId = document.getElementById('editingRowId').value;
+
+            let tr;
+            if (editingRowId) {
+                tr = document.getElementById(editingRowId);
+            } else {
+                tr = document.createElement('tr');
+                tr.id = "row_" + Date.now();
+                tr.className = "hover:bg-slate-50/80 transition-all border-b border-slate-100 text-xs text-slate-700";
+            }
+
+            Object.keys(dataset).forEach(key => tr.setAttribute(`data-${key}`, dataset[key]));
+
+            let ownerAvatar = dataset.vownerpic || `https://api.dicebear.com/7.x/initials/svg?seed=${dataset.vownername}`;
+            let driverAvatar = dataset.dpicurl || `https://api.dicebear.com/7.x/initials/svg?seed=${dataset.dname}`;
+            let nomineeAvatar = dataset.npic || `https://api.dicebear.com/7.x/initials/svg?seed=${dataset.nname}`;
+
+            tr.innerHTML = `
+                <td class="px-6 py-4">
+                    <div class="flex items-center gap-3">
+                        <img src="${ownerAvatar}" class="w-10 h-10 rounded-xl object-cover ring-2 ring-cyan-500/20">
+                        <div>
+                            <div class="font-bold text-slate-900 text-sm">${dataset.vownername}</div>
+                            <div class="text-[10px] text-cyan-600 font-mono">মোবাইল: ${dataset.vownermobile}</div>
+                            <div class="text-[9px] text-slate-500 mt-0.5">কাগজপত্র: ${dataset.vlegalpapers}</div>
+                        </div>
+                    </div>
+                </td>
+                <td class="px-6 py-4">
+                    <div class="flex items-center gap-3">
+                        <img src="${driverAvatar}" class="w-10 h-10 rounded-xl object-cover ring-2 ring-fuchsia-500/20">
+                        <div>
+                            <div class="font-bold text-slate-800">${dataset.dname}</div>
+                            <div class="text-[10px] text-slate-500">মোবাইল: ${dataset.dmobile}</div>
+                            <div class="text-[9px] text-fuchsia-600">Driver NID: ${dataset.dnidno}</div>
+                        </div>
+                    </div>
+                </td>
+                <td class="px-6 py-4">
+                    <div class="flex items-center gap-3">
+                        <img src="${nomineeAvatar}" class="w-10 h-10 rounded-xl object-cover ring-2 ring-pink-500/20">
+                        <div>
+                            <div class="font-bold text-slate-800">${dataset.nname}</div>
+                            <div class="text-[10px] text-slate-600">নমিনি মো: ${dataset.nmobile}</div>
+                        </div>
+                    </div>
+                </td>
+                <td class="px-6 py-4">
+                    <div class="font-bold text-cyan-600 text-sm">${dataset.pauroregno}</div>
+                    <div class="text-[10px] text-slate-700 font-semibold">মালিক NID: ${dataset.vownernid}</div>
+                    <div class="text-[10px] text-slate-500">লোকেশন: ${dataset.vownerupazila}, ${dataset.vownerdistrict}</div>
+                </td>
+                <td class="px-6 py-4">
+                    <span class="px-3 py-1.5 rounded-lg text-[15px] font-bold tracking-wider bg-[#f1f5f9] text-[#1e293b] border border-slate-200 shadow-sm block text-center">${dataset.paymentmethod}</span>
+                </td>
+                <td class="px-6 py-2">
+                    <div class="real-qr bg-white p-1 rounded-lg inline-block cursor-pointer border border-slate-200" data-payload="${qrTextPayload}"></div>
+                </td>
+                <td class="px-6 py-4 space-y-1.5">
+                    <div class="grid grid-cols-2 gap-1">
+                        <button onclick="editMasterRow('${tr.id}')" class="action-edit-btn col-span-2 bg-amber-500 hover:bg-amber-600 text-white py-1 rounded-lg text-[11px] font-bold cursor-pointer transition-all flex items-center justify-center gap-1 shadow-sm">
+                            <i class="fa-solid fa-user-gear"></i> তথ্য এডিট করুন
+                        </button>
+                        <button onclick="executeWhatsAppAutomation(this, 'Owner')" class="bg-emerald-600 hover:bg-emerald-500 text-white py-1 rounded-lg text-[10px] font-bold cursor-pointer flex items-center justify-center gap-0.5 shadow-sm transition-all">
+                            <i class="fa-brands fa-whatsapp"></i> মালিক
+                        </button>
+                        <button onclick="executeWhatsAppAutomation(this, 'Driver')" class="bg-fuchsia-600 hover:bg-fuchsia-500 text-white py-1 rounded-lg text-[10px] font-bold cursor-pointer flex items-center justify-center gap-0.5 shadow-sm transition-all">
+                            <i class="fa-brands fa-whatsapp"></i> চালক
+                        </button>
+                    </div>
+                </td>
+            `;
+
+            if (!editingRowId) {
+                document.getElementById('masterSystemTable').appendChild(tr);
+            }
+
+            new QRCode(tr.querySelector('.real-qr'), { text: qrTextPayload, width: 45, height: 45 });
+            resetFormToNormal();
+            refreshLiveCounter();
+            updateUIAccessControl();
+        }
+
+        // হোয়াটসঅ্যাপ সয়ংক্রিয় মেসেজ ইঞ্জিন
+        function executeWhatsAppAutomation(btn, entityType) {
+            const trRow = btn.closest('tr');
+            const oTitle = trRow.dataset.vownername;
+            const dTitle = trRow.dataset.dname;
+            const regIdentity = trRow.dataset.pauroregno;
+            const payloadData = trRow.querySelector('.real-qr').getAttribute('data-payload');
+
+            let destinationPhone = "";
+            let coreMessage = "";
+
+            if(entityType === 'Owner') {
+                destinationPhone = trRow.dataset.vownerwa || "8801712345678";
+                coreMessage = `সম্মানিত মালিক ${oTitle},\nআপনার যানবাহনের বিবরণ সফলভাবে ডাটাবেসে সংরক্ষিত হয়েছে।\nরেজিস্ট্রেশন নম্বর: ${regIdentity}\nচালক: ${dTitle}\n\nপৌরসভা ট্র্যাকিং QR কোড পেলোড: ${payloadData}`;
+            } else {
+                destinationPhone = trRow.dataset.dwhatsapp || "8801955555555";
+                coreMessage = `হ্যালো চালক ${dTitle},\nপৌরসভা ডাটাবেসে আপনার প্রোফাইল সচল রয়েছে। যান নম্বর: ${regIdentity} (মালিক: ${oTitle})। নিরাপদ গতিতে গাড়ি চালান।`;
+            }
+
+            const automatedUrl = `https://api.whatsapp.com/send?phone=${destinationPhone}&text=${encodeURIComponent(coreMessage)}`;
+            window.open(automatedUrl, '_blank');
+        }
+
+        // ২০,০০০ ডাটা সার্চ ইঞ্জিন
+        function instantSearch() {
+            const token = document.getElementById('liveSearchEngine').value.toUpperCase();
+            const allRows = document.querySelectorAll('#masterSystemTable tr');
+
+            allRows.forEach(row => {
+                const ownerString = row.dataset.vownername + " " + row.dataset.vownernid + " " + row.dataset.vownermobile;
+                const driverString = row.dataset.dname + " " + row.dataset.dnidno + " " + row.dataset.dmobile;
+                const regString = row.dataset.pauroregno;
+
+                if (ownerString.toUpperCase().indexOf(token) > -1 || 
+                    driverString.toUpperCase().indexOf(token) > -1 || 
+                    regString.toUpperCase().indexOf(token) > -1) {
+                    row.style.display = "";
+                } else {
+                    row.style.display = "none";
+                }
+            });
+        }
+
+        function refreshLiveCounter() {
+            const totalActiveRows = document.querySelectorAll('#masterSystemTable tr').length;
+            document.getElementById('liveCounter').innerText = `${totalActiveRows} জন`;
+        }
+
+        window.onload = systemBootLoader;
+    </script>
+</body>
+</html>
